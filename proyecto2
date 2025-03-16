@@ -1,0 +1,41 @@
+#include <Arduino.h>
+const int ledPins[] = {6, 7, 8, 9, 10};  // Pines de los LEDs
+const int switchPins[] = {2, 3, 4};  // Pines de los switches
+
+unsigned long previousMillis = 0;
+const long interval = 500;  // Intervalo de parpadeo en milisegundos
+bool ledState = false;
+
+void setup() {
+    // Configurar los pines de los LEDs como salida
+    for (int i = 0; i < 5; i++) {
+        pinMode(ledPins[i], OUTPUT);
+    }
+
+    // Configurar los pines de los switches como entrada con pull-down externo
+    for (int i = 0; i < 3; i++) {
+        pinMode(switchPins[i], INPUT);  // Mantener así si tienes resistencias pull-down externas
+        // Si decides quitar las resistencias pull-down, usa:
+        // pinMode(switchPins[i], INPUT_PULLUP);
+    }
+}
+
+void loop() {
+    // Leer el estado de los switches
+    for (int i = 0; i < 3; i++) {
+        if (digitalRead(switchPins[i]) == HIGH) {  // Si el switch está presionado
+            digitalWrite(ledPins[i], HIGH);  // Encender LED correspondiente
+        } else {
+            digitalWrite(ledPins[i], LOW);  // Apagar LED si el switch no está presionado
+        }
+    }
+
+    // Parpadeo de los LEDs 4 y 5 con millis()
+    unsigned long currentMillis = millis();
+    if (currentMillis - previousMillis >= interval) {
+        previousMillis = currentMillis;
+        ledState = !ledState;
+        digitalWrite(ledPins[3], ledState);  // LED 4
+        digitalWrite(ledPins[4], ledState);  // LED 5
+    }
+}
